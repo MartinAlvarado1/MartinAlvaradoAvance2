@@ -1,6 +1,7 @@
 
 package martinalvaradoavance2;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -54,18 +55,19 @@ public class MartinAlvaradoAvance2 {
                 72
         );
 
+        // PRUEBA 5: HERENCIA
         System.out.println("\n===== PRUEBA DE HERENCIA =====");
         System.out.println("Fecha heredada: " + presion1.getFecha());
         System.out.println("Peso heredado: " + presion1.getPeso() + " kg");
         System.out.println("Presion sistolica: " + presion1.getSistolica());
 
-        // PRUEBA 5: POLIMORFISMO
+        // PRUEBA 6: POLIMORFISMO
         System.out.println("\n===== PRUEBA DE POLIMORFISMO =====");
 
         RegistroSalud registroPolimorfico = presion1;
         System.out.println(registroPolimorfico.mostrarRegistro());
 
-        // PRUEBA 6: CREAR EL HISTORIAL
+        // PRUEBA 7: HISTORIAL DE SALUD
         HistorialSalud historial = new HistorialSalud();
 
         historial.agregarRegistro(registro1);
@@ -77,7 +79,7 @@ public class MartinAlvaradoAvance2 {
         System.out.println("Cantidad de registros: "
                 + historial.cantidadRegistros());
 
-        // PRUEBA 7: BUSCAR UN REGISTRO
+        // PRUEBA 8: BUSCAR UN REGISTRO
         System.out.println("\n===== BUSCAR REGISTRO =====");
 
         RegistroSalud encontrado = historial.buscarRegistro(2);
@@ -89,7 +91,7 @@ public class MartinAlvaradoAvance2 {
             System.out.println("No se encontro el registro.");
         }
 
-        // PRUEBA 8: MANEJO DE EXCEPCIONES
+        // PRUEBA 9: MANEJO DE EXCEPCIONES
         System.out.println("\n===== PRUEBA DE EXCEPCIONES =====");
 
         try {
@@ -98,7 +100,7 @@ public class MartinAlvaradoAvance2 {
             System.out.println("Error controlado: " + e.getMessage());
         }
 
-        // PRUEBA 9: ELIMINAR UN REGISTRO
+        // PRUEBA 10: ELIMINAR UN REGISTRO
         System.out.println("\n===== ELIMINAR REGISTRO =====");
 
         boolean eliminado = historial.eliminarRegistro(1);
@@ -107,10 +109,36 @@ public class MartinAlvaradoAvance2 {
         System.out.println("Cantidad actual: "
                 + historial.cantidadRegistros());
 
-        // Mostrar el historial actualizado
-        System.out.println("\n===== HISTORIAL ACTUALIZADO =====");
-        System.out.println(historial.mostrarHistorial());
+        // PRUEBA 11: SERIALIZACION
+        System.out.println("\n===== PRUEBA DE SERIALIZACION =====");
 
-        System.out.println("===== FIN DE LAS PRUEBAS =====");
+        // Archivo local para guardar las mediciones
+        RepositorioSalud repositorio =
+                new RepositorioSalud("historial.dat");
+
+        try {
+
+            // Guardar el historial en el archivo
+            repositorio.guardarHistorial(historial);
+
+            System.out.println("Historial guardado correctamente.");
+
+            // Recuperar el historial desde el archivo
+            HistorialSalud historialRecuperado =
+                    repositorio.cargarHistorial();
+
+            System.out.println("\nHistorial recuperado desde el archivo:");
+            System.out.println(historialRecuperado.mostrarHistorial());
+
+            System.out.println("Cantidad de registros recuperados: "
+                    + historialRecuperado.cantidadRegistros());
+
+        } catch (IOException | ClassNotFoundException e) {
+
+            System.out.println("Error al guardar o recuperar el historial: "
+                    + e.getMessage());
+        }
+
+        System.out.println("\n===== FIN DE LAS PRUEBAS =====");
     }
 }
