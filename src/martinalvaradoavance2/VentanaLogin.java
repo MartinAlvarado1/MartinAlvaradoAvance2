@@ -27,7 +27,7 @@ public class VentanaLogin extends JFrame {
     private JButton btnIniciarSesion;
     private JButton btnCrearCuenta;
 
-    // Gestor compartido con la ventana de registro
+    // Administrador de usuarios e historiales
     private final GestorUsuarios gestorUsuarios;
 
     // Colores principales
@@ -48,7 +48,7 @@ public class VentanaLogin extends JFrame {
         inicializarComponentes();
     }
 
-    // Construye los componentes gráficos
+    // Construir la interfaz gráfica
     private void inicializarComponentes() {
 
         JPanel panelPrincipal = new JPanel(new BorderLayout());
@@ -71,6 +71,7 @@ public class VentanaLogin extends JFrame {
         JLabel lblTitulo = new JLabel(
                 "FideHealtTrack", SwingConstants.CENTER
         );
+
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 27));
         lblTitulo.setForeground(colorPrincipal);
         lblTitulo.setAlignmentX(CENTER_ALIGNMENT);
@@ -78,6 +79,7 @@ public class VentanaLogin extends JFrame {
         JLabel lblSubtitulo = new JLabel(
                 "Seguimiento personal de salud"
         );
+
         lblSubtitulo.setFont(new Font("Arial", Font.PLAIN, 13));
         lblSubtitulo.setAlignmentX(CENTER_ALIGNMENT);
 
@@ -91,6 +93,7 @@ public class VentanaLogin extends JFrame {
         txtCorreo.setMaximumSize(
                 new Dimension(Integer.MAX_VALUE, 35)
         );
+
         txtContrasena.setMaximumSize(
                 new Dimension(Integer.MAX_VALUE, 35)
         );
@@ -103,23 +106,25 @@ public class VentanaLogin extends JFrame {
         btnIniciarSesion.setCursor(
                 new Cursor(Cursor.HAND_CURSOR)
         );
+
         btnIniciarSesion.setAlignmentX(CENTER_ALIGNMENT);
         btnIniciarSesion.setMaximumSize(
                 new Dimension(Integer.MAX_VALUE, 40)
         );
 
-        // Botón para crear cuenta
+        // Botón de crear cuenta
         btnCrearCuenta = new JButton("Crear cuenta");
         btnCrearCuenta.setForeground(colorPrincipal);
         btnCrearCuenta.setFocusPainted(false);
         btnCrearCuenta.setContentAreaFilled(false);
         btnCrearCuenta.setBorderPainted(false);
         btnCrearCuenta.setAlignmentX(CENTER_ALIGNMENT);
+
         btnCrearCuenta.setCursor(
                 new Cursor(Cursor.HAND_CURSOR)
         );
 
-        // Agregar componentes al formulario
+        // Agregar componentes
         panelFormulario.add(lblTitulo);
         panelFormulario.add(Box.createVerticalStrut(8));
         panelFormulario.add(lblSubtitulo);
@@ -144,13 +149,11 @@ public class VentanaLogin extends JFrame {
 
         // Eventos
         btnIniciarSesion.addActionListener(e -> iniciarSesion());
-
         txtContrasena.addActionListener(e -> iniciarSesion());
-
         btnCrearCuenta.addActionListener(e -> abrirCrearCuenta());
     }
 
-    // Valida las credenciales ingresadas
+    // Autenticar al usuario
     private void iniciarSesion() {
 
         String correo = txtCorreo.getText().trim();
@@ -166,14 +169,20 @@ public class VentanaLogin extends JFrame {
                         "Campos obligatorios",
                         JOptionPane.WARNING_MESSAGE
                 );
+
                 return;
             }
 
             Usuario usuario = gestorUsuarios.iniciarSesion(
-                    correo, new String(claveIngresada)
+                    correo,
+                    new String(claveIngresada)
             );
 
             if (usuario != null) {
+
+                // Obtener únicamente el historial de este usuario
+                HistorialSalud historialUsuario =
+                        gestorUsuarios.obtenerHistorial(usuario);
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -183,7 +192,16 @@ public class VentanaLogin extends JFrame {
                         JOptionPane.INFORMATION_MESSAGE
                 );
 
-                // El dashboard se implementará después
+                // Abrir el dashboard con el historial correspondiente
+                VentanaDashboard dashboard =
+                        new VentanaDashboard(
+                                usuario,
+                                historialUsuario,
+                                () -> regresarAlLogin()
+                        );
+
+                setVisible(false);
+                dashboard.setVisible(true);
 
             } else {
 
@@ -202,16 +220,24 @@ public class VentanaLogin extends JFrame {
         }
     }
 
-    // Abre la ventana para registrar una cuenta
+    // Abrir el formulario de registro
     private void abrirCrearCuenta() {
 
         VentanaCrearCuenta ventanaRegistro =
                 new VentanaCrearCuenta(
                         gestorUsuarios,
-                        () -> setVisible(true)
+                        () -> regresarAlLogin()
                 );
 
         setVisible(false);
         ventanaRegistro.setVisible(true);
+    }
+
+    // Regresar a la pantalla inicial
+    private void regresarAlLogin() {
+
+        txtContrasena.setText("");
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 }

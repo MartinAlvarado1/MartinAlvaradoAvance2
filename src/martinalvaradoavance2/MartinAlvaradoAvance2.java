@@ -10,10 +10,10 @@ public class MartinAlvaradoAvance2 {
         // Ejecutar la interfaz gráfica en el hilo de Swing
         SwingUtilities.invokeLater(() -> {
 
-            // Crear el gestor compartido de usuarios
+            // Administrador de usuarios y sus historiales
             GestorUsuarios gestorUsuarios = new GestorUsuarios();
 
-            // Abrir la ventana de inicio de sesión
+            // Abrir la pantalla de inicio de sesión
             VentanaLogin ventanaLogin =
                     new VentanaLogin(gestorUsuarios);
 

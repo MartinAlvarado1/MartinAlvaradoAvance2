@@ -3,22 +3,26 @@ package martinalvaradoavance2;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GestorUsuarios {
 
-    // Colección que almacena los usuarios registrados
+    // Lista de usuarios registrados
     private ArrayList<Usuario> listaUsuarios;
+
+    // Historial independiente para cada usuario
+    private HashMap<Integer, HistorialSalud> historiales;
 
     // Constructor
     public GestorUsuarios() {
         listaUsuarios = new ArrayList<>();
+        historiales = new HashMap<>();
     }
 
-    // Registra un nuevo usuario
+    // Registrar un nuevo usuario
     public void registrarUsuario(String nombre, String correo,
             String contrasena, LocalDate fechaNacimiento) {
 
-        // Verificar que los datos no estén vacíos
         if (nombre == null || nombre.trim().isEmpty()
                 || correo == null || correo.trim().isEmpty()
                 || contrasena == null || contrasena.isEmpty()) {
@@ -27,27 +31,27 @@ public class GestorUsuarios {
                     "Todos los campos obligatorios deben completarse.");
         }
 
-        // Validar el formato básico del correo
         correo = correo.trim();
 
+        // Validar formato del correo
         if (!correo.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             throw new IllegalArgumentException(
                     "Debe ingresar un correo electrónico válido.");
         }
 
-        // Verificar que el correo no esté registrado
+        // Validar correo duplicado
         if (buscarUsuario(correo) != null) {
             throw new IllegalArgumentException(
                     "Ya existe una cuenta con este correo electrónico.");
         }
 
-        // Validar longitud mínima de la contraseña
+        // Validar contraseña
         if (contrasena.length() < 8) {
             throw new IllegalArgumentException(
                     "La contraseña debe tener al menos 8 caracteres.");
         }
 
-        // Asignar un identificador al nuevo usuario
+        // Generar identificador
         int nuevoId = 1;
 
         for (Usuario usuario : listaUsuarios) {
@@ -56,7 +60,7 @@ public class GestorUsuarios {
             }
         }
 
-        // Crear el objeto Usuario
+        // Crear usuario
         Usuario nuevoUsuario = new Usuario(
                 nuevoId,
                 nombre.trim(),
@@ -65,11 +69,13 @@ public class GestorUsuarios {
                 fechaNacimiento
         );
 
-        // Agregarlo a la colección
         listaUsuarios.add(nuevoUsuario);
+
+        // Crear un historial exclusivo para el usuario
+        historiales.put(nuevoId, new HistorialSalud());
     }
 
-    // Busca un usuario por correo electrónico
+    // Buscar usuario por correo
     public Usuario buscarUsuario(String correo) {
 
         if (correo == null) {
@@ -88,21 +94,33 @@ public class GestorUsuarios {
         return null;
     }
 
-    // Valida el inicio de sesión
+    // Validar las credenciales
     public Usuario iniciarSesion(String correo, String contrasena) {
 
         Usuario usuario = buscarUsuario(correo);
 
         if (usuario != null
                 && usuario.iniciarSesion(correo, contrasena)) {
-
             return usuario;
         }
 
         return null;
     }
 
-    // Devuelve la cantidad de usuarios registrados
+    // Obtener el historial exclusivo de un usuario
+    public HistorialSalud obtenerHistorial(Usuario usuario) {
+
+        if (usuario == null
+                || !historiales.containsKey(usuario.getIdUsuario())) {
+
+            throw new IllegalArgumentException(
+                    "El usuario no tiene un historial registrado.");
+        }
+
+        return historiales.get(usuario.getIdUsuario());
+    }
+
+    // Cantidad total de usuarios
     public int cantidadUsuarios() {
         return listaUsuarios.size();
     }
