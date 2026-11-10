@@ -21,32 +21,19 @@ public class MartinAlvaradoAvance2 {
                 LocalDate.of(1995, 5, 15)
         );
 
-        System.out.println("\nINFORMACION DEL USUARIO");
-        System.out.println("ID: " + usuario1.getIdUsuario());
-        System.out.println("Nombre: " + usuario1.getNombre());
-        System.out.println("Correo: " + usuario1.getCorreo());
-        System.out.println("Fecha de nacimiento: "
-                + usuario1.getFechaNacimiento());
+        System.out.println("\n===== INFORMACION DEL USUARIO =====");
+        System.out.println(usuario1);
 
         // PRUEBA 2: INICIO DE SESION
-        System.out.println("\nPRUEBA DE INICIO DE SESION");
-
-        boolean accesoCorrecto = usuario1.iniciarSesion(
-                "juan@ejemplo.com", "Prueba123"
-        );
-
-        boolean accesoIncorrecto = usuario1.iniciarSesion(
-                "juan@ejemplo.com", "ClaveIncorrecta"
-        );
+        System.out.println("\n===== PRUEBA DE INICIO DE SESION =====");
 
         System.out.println("Credenciales correctas: "
-                + accesoCorrecto);
+                + usuario1.iniciarSesion("juan@ejemplo.com", "Prueba123"));
+
         System.out.println("Credenciales incorrectas: "
-                + accesoIncorrecto);
+                + usuario1.iniciarSesion("juan@ejemplo.com", "ClaveIncorrecta"));
 
         // PRUEBA 3: CREAR UN REGISTRO GENERAL
-        System.out.println("\n===== REGISTRO GENERAL DE SALUD =====");
-
         RegistroSalud registro1 = new RegistroSalud(
                 1,
                 LocalDate.now(),
@@ -55,11 +42,7 @@ public class MartinAlvaradoAvance2 {
                 "Medicion realizada en la manana"
         );
 
-        System.out.println(registro1.mostrarRegistro());
-
         // PRUEBA 4: CREAR UN REGISTRO DE PRESION ARTERIAL
-        System.out.println("\n===== REGISTRO DE PRESION ARTERIAL =====");
-
         PresionArterial presion1 = new PresionArterial(
                 2,
                 LocalDate.now(),
@@ -71,27 +54,63 @@ public class MartinAlvaradoAvance2 {
                 72
         );
 
-        System.out.println(presion1.mostrarRegistro());
-
-        // PRUEBA 5: HERENCIA
         System.out.println("\n===== PRUEBA DE HERENCIA =====");
+        System.out.println("Fecha heredada: " + presion1.getFecha());
+        System.out.println("Peso heredado: " + presion1.getPeso() + " kg");
+        System.out.println("Presion sistolica: " + presion1.getSistolica());
 
-        System.out.println("Fecha heredada: "
-                + presion1.getFecha());
-
-        System.out.println("Peso heredado: "
-                + presion1.getPeso() + " kg");
-
-        System.out.println("Presion sistolica propia: "
-                + presion1.getSistolica());
-
-        // PRUEBA 6: POLIMORFISMO
+        // PRUEBA 5: POLIMORFISMO
         System.out.println("\n===== PRUEBA DE POLIMORFISMO =====");
 
         RegistroSalud registroPolimorfico = presion1;
-
         System.out.println(registroPolimorfico.mostrarRegistro());
 
-        System.out.println("\n===== FIN DE LAS PRUEBAS =====");
+        // PRUEBA 6: CREAR EL HISTORIAL
+        HistorialSalud historial = new HistorialSalud();
+
+        historial.agregarRegistro(registro1);
+        historial.agregarRegistro(presion1);
+
+        System.out.println("\n===== HISTORIAL DE MEDICIONES =====");
+        System.out.println(historial.mostrarHistorial());
+
+        System.out.println("Cantidad de registros: "
+                + historial.cantidadRegistros());
+
+        // PRUEBA 7: BUSCAR UN REGISTRO
+        System.out.println("\n===== BUSCAR REGISTRO =====");
+
+        RegistroSalud encontrado = historial.buscarRegistro(2);
+
+        if (encontrado != null) {
+            System.out.println("Registro encontrado:");
+            System.out.println(encontrado.mostrarRegistro());
+        } else {
+            System.out.println("No se encontro el registro.");
+        }
+
+        // PRUEBA 8: MANEJO DE EXCEPCIONES
+        System.out.println("\n===== PRUEBA DE EXCEPCIONES =====");
+
+        try {
+            historial.agregarRegistro(presion1);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error controlado: " + e.getMessage());
+        }
+
+        // PRUEBA 9: ELIMINAR UN REGISTRO
+        System.out.println("\n===== ELIMINAR REGISTRO =====");
+
+        boolean eliminado = historial.eliminarRegistro(1);
+
+        System.out.println("Registro eliminado: " + eliminado);
+        System.out.println("Cantidad actual: "
+                + historial.cantidadRegistros());
+
+        // Mostrar el historial actualizado
+        System.out.println("\n===== HISTORIAL ACTUALIZADO =====");
+        System.out.println(historial.mostrarHistorial());
+
+        System.out.println("===== FIN DE LAS PRUEBAS =====");
     }
 }
