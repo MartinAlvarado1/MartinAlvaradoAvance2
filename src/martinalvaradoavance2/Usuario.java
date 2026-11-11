@@ -8,25 +8,28 @@ public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Atributos del usuario
+    // Información del usuario
     private int idUsuario;
     private String nombre;
     private String correo;
-    private String contrasena;
+    private String contrasenaHash;
     private LocalDate fechaNacimiento;
 
     // Constructor
     public Usuario(int idUsuario, String nombre, String correo,
-                   String contrasena, LocalDate fechaNacimiento) {
+            String contrasena, LocalDate fechaNacimiento) {
 
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.correo = correo;
-        this.contrasena = contrasena;
         this.fechaNacimiento = fechaNacimiento;
+
+        // Guardar un hash, nunca la contraseña original
+        this.contrasenaHash =
+                SeguridadContrasenas.generarHash(contrasena);
     }
 
-    // Métodos para consultar los atributos
+    // Consultar información del usuario
     public int getIdUsuario() {
         return idUsuario;
     }
@@ -39,15 +42,11 @@ public class Usuario implements Serializable {
         return correo;
     }
 
-    public String getContrasena() {
-        return contrasena;
-    }
-
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    // Métodos para modificar los atributos
+    // Modificar información del usuario
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -56,24 +55,35 @@ public class Usuario implements Serializable {
         this.correo = correo;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
-
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // Verifica si las credenciales coinciden
-    public boolean iniciarSesion(String correo, String contrasena) {
-        return this.correo.equalsIgnoreCase(correo)
-                && this.contrasena.equals(contrasena);
+    // Actualizar contraseña de forma protegida
+    public void setContrasena(String nuevaContrasena) {
+
+        this.contrasenaHash =
+                SeguridadContrasenas.generarHash(
+                        nuevaContrasena
+                );
     }
 
-    // Devuelve información básica del usuario
+    // Verificar las credenciales
+    public boolean iniciarSesion(
+            String correo, String contrasena) {
+
+        return this.correo.equalsIgnoreCase(correo)
+                && SeguridadContrasenas.verificarContrasena(
+                        contrasena,
+                        contrasenaHash
+                );
+    }
+
+    // Mostrar información general, sin datos sensibles
     @Override
     public String toString() {
-        return "Usuario: " + nombre + " - Correo: " + correo;
+
+        return "Usuario: " + nombre
+                + " - Correo: " + correo;
     }
 }
-
