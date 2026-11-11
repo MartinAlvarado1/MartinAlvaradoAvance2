@@ -12,7 +12,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -23,10 +22,10 @@ public class VentanaDashboard extends JFrame {
     private final HistorialSalud historial;
     private final Runnable cerrarSesion;
 
-    // Componentes que se actualizarán al guardar mediciones
+    // Panel central del dashboard
     private JPanel panelContenido;
 
-    // Colores principales de FideHealtTrack
+    // Colores principales
     private final Color colorPrincipal = new Color(22, 141, 154);
     private final Color colorFondo = new Color(234, 246, 248);
 
@@ -47,13 +46,13 @@ public class VentanaDashboard extends JFrame {
         inicializarComponentes();
     }
 
-    // Construye la estructura principal del dashboard
+    // Construye la ventana principal
     private void inicializarComponentes() {
 
         JPanel panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(colorFondo);
 
-        // Encabezado superior
+        // Encabezado
         JLabel lblTitulo = new JLabel("FideHealtTrack");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 25));
         lblTitulo.setForeground(colorPrincipal);
@@ -97,7 +96,7 @@ public class VentanaDashboard extends JFrame {
 
         panelPrincipal.add(menu, BorderLayout.WEST);
 
-        // Contenedor central que se puede actualizar
+        // Panel central
         panelContenido = new JPanel(new BorderLayout());
         panelContenido.setBackground(colorFondo);
 
@@ -105,7 +104,7 @@ public class VentanaDashboard extends JFrame {
 
         add(panelPrincipal);
 
-        // Mostrar las mediciones al abrir el dashboard
+        // Mostrar la información inicial
         actualizarDashboard();
 
         // Eventos del menú
@@ -115,14 +114,9 @@ public class VentanaDashboard extends JFrame {
                 e -> abrirNuevaMedicion()
         );
 
-        btnHistorial.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "La consulta del historial se implementará próximamente.",
-                    "FideHealtTrack",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
+        btnHistorial.addActionListener(
+                e -> abrirHistorial()
+        );
 
         btnCerrarSesion.addActionListener(e -> {
 
@@ -134,7 +128,7 @@ public class VentanaDashboard extends JFrame {
         });
     }
 
-    // Muestra o actualiza los indicadores de la última medición
+    // Actualiza los indicadores de la última medición
     private void actualizarDashboard() {
 
         panelContenido.removeAll();
@@ -154,7 +148,6 @@ public class VentanaDashboard extends JFrame {
 
         contenido.add(lblUltimaMedicion, BorderLayout.NORTH);
 
-        // Buscar la última medición del usuario
         PresionArterial ultima = obtenerUltimaMedicion();
 
         if (ultima != null) {
@@ -215,33 +208,43 @@ public class VentanaDashboard extends JFrame {
 
         panelContenido.add(contenido, BorderLayout.CENTER);
 
-        // Actualizar visualmente los componentes
         panelContenido.revalidate();
         panelContenido.repaint();
     }
 
-    // Abrir formulario para registrar una medición
+    // Abre la ventana para registrar mediciones
     private void abrirNuevaMedicion() {
 
         VentanaRegistrarMedicion ventanaMedicion =
                 new VentanaRegistrarMedicion(
                         historial,
                         () -> {
-
-                            // Actualizar indicadores al regresar
                             actualizarDashboard();
-
                             setVisible(true);
                         }
                 );
 
-        // Ocultar dashboard mientras se registra
         setVisible(false);
-
         ventanaMedicion.setVisible(true);
     }
 
-    // Configurar un botón del menú lateral
+    // Abre la ventana del historial de salud
+    private void abrirHistorial() {
+
+        VentanaHistorial ventanaHistorial =
+                new VentanaHistorial(
+                        historial,
+                        () -> {
+                            actualizarDashboard();
+                            setVisible(true);
+                        }
+                );
+
+        setVisible(false);
+        ventanaHistorial.setVisible(true);
+    }
+
+    // Crea botones del menú lateral
     private JButton crearBoton(String texto) {
 
         JButton boton = new JButton(texto);
@@ -257,7 +260,7 @@ public class VentanaDashboard extends JFrame {
         return boton;
     }
 
-    // Construir una tarjeta con un indicador de salud
+    // Crea una tarjeta para mostrar indicadores
     private JPanel crearTarjeta(String titulo,
             String valor, String unidad) {
 
@@ -299,7 +302,7 @@ public class VentanaDashboard extends JFrame {
         return tarjeta;
     }
 
-    // Buscar la medición de presión más reciente
+    // Obtiene la última medición de presión arterial
     private PresionArterial obtenerUltimaMedicion() {
 
         PresionArterial ultima = null;
